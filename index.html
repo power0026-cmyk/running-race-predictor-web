@@ -11,7 +11,7 @@
     <header class="hero">
       <div>
         <h1>Running Race Predictor</h1>
-        <p>웹 2.3단계 · 확장형 대회 DB + 비교 카드</p>
+        <p>웹 2.4단계 · 커스텀 대회 추가 + 즐겨찾기</p>
       </div>
       <div class="hero-badge">WEB MVP</div>
     </header>
@@ -83,7 +83,7 @@
         </div>
 
         <div class="helper-text">
-          하나의 기록만 넣어도 계산 가능하고, 계산하면 아래 대회 비교 카드가 자동 생성돼.
+          계산하면 아래 대회 비교 카드가 자동 생성되고, 직접 추가한 대회도 함께 반영돼.
         </div>
       </section>
 
@@ -169,6 +169,57 @@
         <div class="detail-box"><div class="detail-label">평균 페이스</div><div id="resultPace" class="detail-value">-</div></div>
         <div class="detail-box wide"><div class="detail-label">메모</div><div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div></div>
       </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>내 대회 추가</h2>
+        <span class="section-caption">원하는 대회를 직접 넣고 즐겨찾기로 올릴 수 있어</span>
+      </div>
+
+      <div class="custom-race-grid">
+        <label class="field">
+          <span>대회명</span>
+          <input id="customRaceName" type="text" placeholder="예: 내동네마라톤" />
+        </label>
+        <label class="field">
+          <span>종목</span>
+          <select id="customRaceMode">
+            <option value="full">풀</option>
+            <option value="half">하프</option>
+            <option value="tenk">10K</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>보정값</span>
+          <input id="customRaceFactor" type="number" step="0.001" placeholder="예: 1.005" />
+        </label>
+        <label class="field">
+          <span>설명</span>
+          <input id="customRaceDesc" type="text" placeholder="예: 강변형, 후반 업다운" />
+        </label>
+        <label class="field">
+          <span>계절</span>
+          <input id="customRaceSeason" type="text" placeholder="예: 봄" />
+        </label>
+        <label class="field">
+          <span>고도</span>
+          <input id="customRaceElevation" type="text" placeholder="예: 중간" />
+        </label>
+      </div>
+
+      <div class="action-row custom-actions">
+        <label class="checkbox-row">
+          <input id="customRaceFavorite" type="checkbox" />
+          <span>즐겨찾기</span>
+        </label>
+        <button id="addCustomRaceBtn" class="primary">대회 추가</button>
+        <button id="clearCustomRacesBtn">내 대회 전체 삭제</button>
+      </div>
+
+      <div id="customRaceMessage" class="helper-text custom-message">아직 추가한 대회가 없어.</div>
+
+      <div id="customRaceList" class="custom-race-list"></div>
     </section>
 
     <section class="card">
