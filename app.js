@@ -1,18 +1,30 @@
 let latestCsvSummary = null;
 
-function byId(id) {
-  return document.getElementById(id);
-}
+const RACE_DB = {
+  full: [
+    { name: "서울마라톤", factor: 0.992, desc: "기록 친화적", season: "봄", elevation: "낮음" },
+    { name: "대구마라톤", factor: 0.993, desc: "고속 코스", season: "봄", elevation: "낮음" },
+    { name: "JTBC 서울마라톤", factor: 0.995, desc: "도심형 무난 코스", season: "가을", elevation: "중간" },
+    { name: "춘천마라톤", factor: 1.006, desc: "후반 미세 난이도", season: "가을", elevation: "중간" },
+    { name: "경주국제마라톤", factor: 1.004, desc: "무난하나 변수 존재", season: "가을", elevation: "중간" },
+    { name: "공주마라톤", factor: 1.012, desc: "업다운 변수 존재", season: "가을", elevation: "조금 높음" }
+  ],
+  half: [
+    { name: "서울하프마라톤", factor: 0.996, desc: "하프 기록 친화적", season: "봄", elevation: "낮음" },
+    { name: "경주국제마라톤 하프", factor: 1.003, desc: "무난한 하프", season: "가을", elevation: "중간" },
+    { name: "도심 하프 기준", factor: 0.999, desc: "비교용 기준 코스", season: "봄", elevation: "보통" }
+  ],
+  tenk: [
+    { name: "서울마라톤 10K", factor: 0.998, desc: "빠른 10K", season: "봄", elevation: "낮음" },
+    { name: "JTBC 서울마라톤 10K", factor: 1.000, desc: "일반적인 도심형", season: "가을", elevation: "보통" },
+    { name: "서울하프마라톤 10K", factor: 1.001, desc: "무난한 10K", season: "봄", elevation: "보통" },
+    { name: "경주국제마라톤 10K", factor: 1.004, desc: "약간의 변수", season: "가을", elevation: "중간" }
+  ]
+};
 
-function setText(id, value) {
-  const el = byId(id);
-  if (el) el.textContent = value;
-}
-
-function setValue(id, value) {
-  const el = byId(id);
-  if (el) el.value = value;
-}
+function byId(id) { return document.getElementById(id); }
+function setText(id, value) { const el = byId(id); if (el) el.textContent = value; }
+function setValue(id, value) { const el = byId(id); if (el) el.value = value; }
 
 function parseTimeToSeconds(text) {
   if (!text) return 0;
@@ -40,6 +52,18 @@ function secondsToPace(secPerKm) {
   return `${m}:${String(s).padStart(2, "0")}/km`;
 }
 
+function getDistanceByMode(mode) {
+  if (mode === "full") return 42.195;
+  if (mode === "half") return 21.0975;
+  return 10;
+}
+
+function getDbMode(mode) {
+  if (mode === "full") return "full";
+  if (mode === "half") return "half";
+  return "tenk";
+}
+
 function riegel(timeSec, d1, d2, exponent = 1.06) {
   return timeSec * Math.pow(d2 / d1, exponent);
 }
@@ -49,20 +73,20 @@ function pickPrediction(mode, tenk, half, full) {
     return {
       dist: 10,
       pred: tenk || (half ? riegel(half, 21.0975, 10, 1.04) : 0) || (full ? riegel(full, 42.195, 10, 1.03) : 0),
-      base: tenk ? "10K 기록 직접 사용" : (half ? "하프 기록 기반 예측" : "풀 기록 기반 예측"),
+      base: tenk ? "10K 기록 직접 사용" : (half ? "하프 기록 기반 예측" : "풀 기록 기반 예측")
     };
   }
   if (mode === "half") {
     return {
       dist: 21.0975,
       pred: half || (tenk ? riegel(tenk, 10, 21.0975, 1.06) : 0) || (full ? riegel(full, 42.195, 21.0975, 1.045) : 0),
-      base: half ? "하프 기록 직접 사용" : (tenk ? "10K 기록 기반 예측" : "풀 기록 기반 예측"),
+      base: half ? "하프 기록 직접 사용" : (tenk ? "10K 기록 기반 예측" : "풀 기록 기반 예측")
     };
   }
   return {
     dist: 42.195,
     pred: full || (half ? riegel(half, 21.0975, 42.195, 1.06) : 0) || (tenk ? riegel(tenk, 10, 42.195, 1.06) : 0),
-    base: full ? "풀 기록 직접 사용" : (half ? "하프 기록 기반 예측" : "10K 기록 기반 예측"),
+    base: full ? "풀 기록 직접 사용" : (half ? "하프 기록 기반 예측" : "10K 기록 기반 예측")
   };
 }
 
@@ -73,6 +97,42 @@ function setPredictionResult(timeText, paceText, noteText) {
   setText("heroTime", timeText);
   setText("heroPace", paceText);
   setText("heroMeta", noteText);
+}
+
+function buildRaceCards(mode, basePredictionSec) {
+  const dbMode = getDbMode(mode);
+  const raceList = RACE_DB[dbMode] || [];
+  const dist = getDistanceByMode(dbMode);
+
+  return raceList.map(race => {
+    const pred = basePredictionSec * race.factor;
+    return {
+      ...race,
+      pred,
+      pace: pred / dist
+    };
+  });
+}
+
+function renderRaceCards(mode, basePredictionSec) {
+  const wrap = byId("raceCards");
+  if (!wrap) return;
+
+  if (!basePredictionSec || basePredictionSec <= 0) {
+    wrap.innerHTML = '<div class="empty-message">계산하면 여기에 대회 비교 카드가 생겨.</div>';
+    return;
+  }
+
+  const races = buildRaceCards(mode, basePredictionSec);
+  wrap.innerHTML = races.map(race => `
+    <div class="race-card">
+      <div class="race-card-title">${race.name}</div>
+      <div class="race-card-time">${secondsToHms(race.pred)}</div>
+      <div class="race-card-pace">${secondsToPace(race.pace)}</div>
+      <div class="race-card-desc">${race.desc}</div>
+      <div class="race-card-meta">${race.season} · ${race.elevation}</div>
+    </div>
+  `).join("");
 }
 
 const calcBtn = byId("calcBtn");
@@ -92,6 +152,7 @@ if (calcBtn) {
 
     if (!result.pred) {
       setPredictionResult("-", "-", "기록을 하나 이상 입력해줘");
+      renderRaceCards(mode, 0);
       saveAppState();
       return;
     }
@@ -120,11 +181,8 @@ if (calcBtn) {
       comments.push("1년 누적 안정적");
     }
 
-    if (avgHr >= 155) {
-      comments.push("최근 훈련강도 높음");
-    } else if (avgHr > 0) {
-      comments.push("평균 심박 반영");
-    }
+    if (avgHr >= 155) comments.push("최근 훈련강도 높음");
+    else if (avgHr > 0) comments.push("평균 심박 반영");
 
     setPredictionResult(
       secondsToHms(adjustedPred),
@@ -132,6 +190,7 @@ if (calcBtn) {
       `${mode} 기준 예측 완료 · ${comments.join(" · ")}`
     );
 
+    renderRaceCards(mode, adjustedPred);
     saveAppState();
   });
 }
@@ -266,7 +325,6 @@ function looksLikeRun(row) {
   const text = Object.values(row).join(" ").toLowerCase();
   const positive = ["run", "running", "러닝", "달리기", "트레드밀"];
   const negative = ["ride", "cycling", "bike", "walk", "hike", "swim", "요가"];
-
   if (positive.some(word => text.includes(word))) return true;
   if (negative.some(word => text.includes(word))) return false;
   return true;
@@ -401,11 +459,8 @@ if (csvFile) {
       latestCsvSummary = summary;
       setCsvSummary(summary);
 
-      if (!summary) {
-        setText("csvFileName", `${file.name} · 러닝 데이터 인식 실패`);
-      } else {
-        setText("csvFileName", `${file.name} · 업로드 완료`);
-      }
+      if (!summary) setText("csvFileName", `${file.name} · 러닝 데이터 인식 실패`);
+      else setText("csvFileName", `${file.name} · 업로드 완료`);
     } catch (err) {
       latestCsvSummary = null;
       setText("csvFileName", `${file.name} · 읽기 실패`);
@@ -425,10 +480,7 @@ if (applyCsvBtn) {
     setValue("mileage6m", latestCsvSummary.sixMonthDistance.toFixed(1));
     setValue("mileage1y", latestCsvSummary.oneYearDistance.toFixed(1));
     setValue("weekly", latestCsvSummary.weeklyEstimate.toFixed(1));
-
-    if (latestCsvSummary.avgHr > 0) {
-      setValue("avgHrInput", latestCsvSummary.avgHr.toFixed(0));
-    }
+    if (latestCsvSummary.avgHr > 0) setValue("avgHrInput", latestCsvSummary.avgHr.toFixed(0));
 
     setText("heroMeta", "CSV 요약값을 입력칸에 적용했어");
     saveAppState();
@@ -437,7 +489,7 @@ if (applyCsvBtn) {
 
 /* localStorage */
 
-const STORAGE_KEY = "running_race_predictor_web_state_v2_2";
+const STORAGE_KEY = "running_race_predictor_web_state_v2_3";
 
 function getAppState() {
   return {
@@ -460,14 +512,14 @@ function getAppState() {
     resultPace: byId("resultPace")?.textContent || "-",
     resultNote: byId("resultNote")?.textContent || "기록을 입력하고 계산해줘",
     paceResult: byId("paceResult")?.textContent || "-",
-    paceSubResult: byId("paceSubResult")?.textContent || "-"
+    paceSubResult: byId("paceSubResult")?.textContent || "-",
+    raceCardsHtml: byId("raceCards")?.innerHTML || ""
   };
 }
 
 function saveAppState() {
   try {
-    const state = getAppState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(getAppState()));
   } catch (err) {
     console.error("저장 실패", err);
   }
@@ -502,6 +554,9 @@ function loadAppState() {
     setText("paceResult", state.paceResult || "-");
     setText("paceSubResult", state.paceSubResult || "-");
 
+    const raceCards = byId("raceCards");
+    if (raceCards && state.raceCardsHtml) raceCards.innerHTML = state.raceCardsHtml;
+
     updatePaceModeVisibility();
   } catch (err) {
     console.error("불러오기 실패", err);
@@ -515,22 +570,9 @@ function bindAutoSave(id, eventName = "input") {
 
 loadAppState();
 
-[
-  "tenk",
-  "half",
-  "full",
-  "mileage6m",
-  "mileage1y",
-  "weekly",
-  "avgHrInput",
-  "dist",
-  "targetTime",
-  "targetPace"
-].forEach(id => bindAutoSave(id, "input"));
+["tenk", "half", "full", "mileage6m", "mileage1y", "weekly", "avgHrInput", "dist", "targetTime", "targetPace"]
+  .forEach(id => bindAutoSave(id, "input"));
 
-[
-  "raceMode",
-  "paceCalcMode"
-].forEach(id => bindAutoSave(id, "change"));
+["raceMode", "paceCalcMode"].forEach(id => bindAutoSave(id, "change"));
 
 updatePaceModeVisibility();
