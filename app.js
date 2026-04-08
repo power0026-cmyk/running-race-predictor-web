@@ -1,3 +1,5 @@
+let latestCsvSummary = null;
+
 function parseTimeToSeconds(text) {
   if (!text) return 0;
   const parts = text.trim().split(":").map(Number);
@@ -65,6 +67,12 @@ document.getElementById("calcBtn").addEventListener("click", () => {
   const half = parseTimeToSeconds(document.getElementById("half").value);
   const full = parseTimeToSeconds(document.getElementById("full").value);
   const mode = document.getElementById("raceMode").value;
+
+  const mileage6m = Number(document.getElementById("mileage6m").value || 0);
+  const mileage1y = Number(document.getElementById("mileage1y").value || 0);
+  const weekly = Number(document.getElementById("weekly").value || 0);
+  const avgHr = Number(document.getElementById("avgHrInput").value || 0);
+
   const result = pickPrediction(mode, tenk, half, full);
 
   if (!result.pred) {
@@ -72,10 +80,40 @@ document.getElementById("calcBtn").addEventListener("click", () => {
     return;
   }
 
+  let adjustedPred = result.pred;
+  const comments = [result.base];
+
+  if (weekly >= 50) {
+    adjustedPred *= 0.992;
+    comments.push("주간거리 양호");
+  } else if (weekly > 0 && weekly < 25) {
+    adjustedPred *= 1.015;
+    comments.push("주간거리 부족");
+  }
+
+  if (mileage6m >= 800) {
+    adjustedPred *= 0.994;
+    comments.push("6개월 누적 양호");
+  } else if (mileage6m > 0 && mileage6m < 400) {
+    adjustedPred *= 1.012;
+    comments.push("6개월 거리 낮음");
+  }
+
+  if (mileage1y >= 1600) {
+    adjustedPred *= 0.996;
+    comments.push("1년 누적 안정적");
+  }
+
+  if (avgHr >= 155) {
+    comments.push("최근 훈련강도 높음");
+  } else if (avgHr > 0) {
+    comments.push("평균 심박 반영");
+  }
+
   setPredictionResult(
-    secondsToHms(result.pred),
-    secondsToPace(result.pred / result.dist),
-    `${mode} 기준 예측 완료 · ${result.base}`
+    secondsToHms(adjustedPred),
+    secondsToPace(adjustedPred / result.dist),
+    `${mode} 기준 예측 완료 · ${comments.join(" · ")}`
   );
 });
 
@@ -120,8 +158,6 @@ document.getElementById("paceBtn").addEventListener("click", () => {
   }
 });
 
-updatePaceModeVisibility();
-
 function parseCsvLine(line) {
   const result = [];
   let current = "";
@@ -144,6 +180,7 @@ function parseCsvLine(line) {
       current += ch;
     }
   }
+
   result.push(current);
   return result;
 }
@@ -172,9 +209,7 @@ function findColumn(row, candidates) {
   for (const key of keys) {
     const lower = key.toLowerCase();
     for (const cand of candidates) {
-      if (lower.includes(cand)) {
-        return key;
-      }
+      if (lower.includes(cand)) return key;
     }
   }
   return null;
@@ -200,7 +235,6 @@ function looksLikeRun(row) {
 
   if (positive.some(word => text.includes(word))) return true;
   if (negative.some(word => text.includes(word))) return false;
-
   return true;
 }
 
@@ -223,13 +257,18 @@ function summarizeTrainingCsv(rows) {
   let totalPace = 0;
   let paceCount = 0;
   let sixMonthDistance = 0;
+  let oneYearDistance = 0;
+
+  const datedDistances = [];
 
   const now = new Date();
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(now.getMonth() - 6);
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(now.getFullYear() - 1);
 
   for (const row of rows) {
-    if (typeCol && !looksLikeRun({[typeCol]: row[typeCol]})) continue;
+    if (typeCol && !looksLikeRun({ [typeCol]: row[typeCol] })) continue;
 
     const distance = safeNumber(row[distanceCol]);
     if (distance <= 0) continue;
@@ -260,19 +299,39 @@ function summarizeTrainingCsv(rows) {
     }
 
     const dt = parseFlexibleDate(row[dateCol]);
-    if (dt && dt >= sixMonthsAgo) {
-      sixMonthDistance += distance;
+    if (dt) {
+      datedDistances.push({ date: dt, distance });
+
+      if (dt >= sixMonthsAgo) {
+        sixMonthDistance += distance;
+      }
+      if (dt >= oneYearAgo) {
+        oneYearDistance += distance;
+      }
     }
   }
 
   if (!runs) return null;
+
+  let weeklyEstimate = 0;
+  if (datedDistances.length > 1) {
+    datedDistances.sort((a, b) => a.date - b.date);
+    const first = datedDistances[0].date;
+    const last = datedDistances[datedDistances.length - 1].date;
+    const spanDays = Math.max(7, Math.round((last - first) / (1000 * 60 * 60 * 24)) + 1);
+    weeklyEstimate = (totalDistance / spanDays) * 7;
+  } else if (oneYearDistance > 0) {
+    weeklyEstimate = oneYearDistance / 52;
+  }
 
   return {
     runs,
     totalDistance,
     avgPace: paceCount ? totalPace / paceCount : 0,
     avgHr: hrCount ? totalHr / hrCount : 0,
-    sixMonthDistance
+    sixMonthDistance,
+    oneYearDistance,
+    weeklyEstimate
   };
 }
 
@@ -283,6 +342,8 @@ function setCsvSummary(summary) {
     document.getElementById("csvPace").textContent = "-";
     document.getElementById("csvHr").textContent = "-";
     document.getElementById("csv6m").textContent = "-";
+    document.getElementById("csv1y").textContent = "-";
+    document.getElementById("csvWeekly").textContent = "-";
     return;
   }
 
@@ -291,12 +352,15 @@ function setCsvSummary(summary) {
   document.getElementById("csvPace").textContent = summary.avgPace ? secondsToPace(summary.avgPace) : "-";
   document.getElementById("csvHr").textContent = summary.avgHr ? `${summary.avgHr.toFixed(0)} bpm` : "-";
   document.getElementById("csv6m").textContent = `${summary.sixMonthDistance.toFixed(1)} km`;
+  document.getElementById("csv1y").textContent = `${summary.oneYearDistance.toFixed(1)} km`;
+  document.getElementById("csvWeekly").textContent = `${summary.weeklyEstimate.toFixed(1)} km`;
 }
 
 document.getElementById("csvFile").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) {
     document.getElementById("csvFileName").textContent = "선택된 파일 없음";
+    latestCsvSummary = null;
     setCsvSummary(null);
     return;
   }
@@ -307,6 +371,7 @@ document.getElementById("csvFile").addEventListener("change", async (event) => {
     const text = await file.text();
     const rows = parseCsv(text);
     const summary = summarizeTrainingCsv(rows);
+    latestCsvSummary = summary;
     setCsvSummary(summary);
 
     if (!summary) {
@@ -315,7 +380,27 @@ document.getElementById("csvFile").addEventListener("change", async (event) => {
       document.getElementById("csvFileName").textContent = `${file.name} · 업로드 완료`;
     }
   } catch (err) {
+    latestCsvSummary = null;
     document.getElementById("csvFileName").textContent = `${file.name} · 읽기 실패`;
     setCsvSummary(null);
   }
 });
+
+document.getElementById("applyCsvBtn").addEventListener("click", () => {
+  if (!latestCsvSummary) {
+    document.getElementById("heroMeta").textContent = "먼저 CSV를 업로드해줘";
+    return;
+  }
+
+  document.getElementById("mileage6m").value = latestCsvSummary.sixMonthDistance.toFixed(1);
+  document.getElementById("mileage1y").value = latestCsvSummary.oneYearDistance.toFixed(1);
+  document.getElementById("weekly").value = latestCsvSummary.weeklyEstimate.toFixed(1);
+
+  if (latestCsvSummary.avgHr > 0) {
+    document.getElementById("avgHrInput").value = latestCsvSummary.avgHr.toFixed(0);
+  }
+
+  document.getElementById("heroMeta").textContent = "CSV 요약값을 입력칸에 적용했어";
+});
+
+updatePaceModeVisibility();
