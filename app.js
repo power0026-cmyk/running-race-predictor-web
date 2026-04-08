@@ -64,3 +64,16 @@ document.getElementById("calcBtn").addEventListener("click", () => {
   document.getElementById("resultPace").textContent = secondsToPace(pred / dist);
   document.getElementById("resultNote").textContent = "예측 완료";
 });
+document.getElementById("paceBtn").addEventListener("click", () => {
+  const dist = Number(document.getElementById("dist").value || 0);
+  const time = parseTimeToSeconds(document.getElementById("targetTime").value);
+
+  if (!dist || !time) {
+    document.getElementById("paceResult").textContent = "입력 확인";
+    return;
+  }
+
+  const pace = time / dist;
+  document.getElementById("paceResult").textContent =
+    "평균 페이스: " + secondsToPace(pace);
+});
