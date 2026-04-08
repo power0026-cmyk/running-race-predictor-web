@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ko">
 <head>
@@ -12,7 +11,7 @@
     <header class="hero">
       <div>
         <h1>Running Race Predictor</h1>
-        <p>웹 1.5단계 · 예측 + 페이스 계산기</p>
+        <p>웹 2.1단계 · CSV 자동 반영</p>
       </div>
       <div class="hero-badge">WEB MVP</div>
     </header>
@@ -30,6 +29,7 @@
           <h2>기록 입력</h2>
           <span class="section-caption">hh:mm:ss 또는 mm:ss</span>
         </div>
+
         <div class="record-grid">
           <label class="field">
             <span>10K</span>
@@ -46,8 +46,33 @@
         </div>
 
         <div class="section-title-row top-gap">
+          <h2>훈련 지표</h2>
+          <span class="section-caption">CSV 업로드 후 자동 반영 가능</span>
+        </div>
+
+        <div class="metrics-grid">
+          <label class="field">
+            <span>최근 6개월 거리 (km)</span>
+            <input id="mileage6m" type="number" min="0" step="0.1" placeholder="예: 820" />
+          </label>
+          <label class="field">
+            <span>최근 1년 거리 (km)</span>
+            <input id="mileage1y" type="number" min="0" step="0.1" placeholder="예: 1650" />
+          </label>
+          <label class="field">
+            <span>주간거리 추정 (km)</span>
+            <input id="weekly" type="number" min="0" step="0.1" placeholder="예: 42" />
+          </label>
+          <label class="field">
+            <span>평균 훈련 심박</span>
+            <input id="avgHrInput" type="number" min="0" step="1" placeholder="예: 145" />
+          </label>
+        </div>
+
+        <div class="section-title-row top-gap">
           <h2>목표 대회</h2>
         </div>
+
         <div class="action-row">
           <select id="raceMode">
             <option value="10K">10K</option>
@@ -58,7 +83,7 @@
         </div>
 
         <div class="helper-text">
-          하나의 기록만 넣어도 계산 가능하고, 여러 기록을 넣으면 가장 가까운 기준으로 예측해.
+          하나의 기록만 넣어도 계산 가능하고, CSV를 올리면 훈련 지표를 자동으로 채울 수 있어.
         </div>
       </section>
 
@@ -110,40 +135,52 @@
     </div>
 
     <section class="card">
-  <div class="section-title-row">
-    <h2>훈련 CSV 업로드</h2>
-    <span class="section-caption">훈련 기록 파일을 올리면 요약해줘</span>
-  </div>
+      <div class="section-title-row">
+        <h2>훈련 CSV 업로드</h2>
+        <span class="section-caption">훈련 기록 파일을 올리면 요약하고 입력값에 반영 가능</span>
+      </div>
 
-  <div class="upload-row">
-    <input id="csvFile" type="file" accept=".csv" />
-    <div id="csvFileName" class="helper-text">선택된 파일 없음</div>
-  </div>
+      <div class="upload-row">
+        <input id="csvFile" type="file" accept=".csv" />
+        <div id="csvFileName" class="helper-text">선택된 파일 없음</div>
+      </div>
 
-  <div class="summary-grid">
-    <div class="detail-box">
-      <div class="detail-label">총 활동 수</div>
-      <div id="csvRuns" class="detail-value">-</div>
-    </div>
-    <div class="detail-box">
-      <div class="detail-label">총 거리</div>
-      <div id="csvDistance" class="detail-value">-</div>
-    </div>
-    <div class="detail-box">
-      <div class="detail-label">평균 페이스</div>
-      <div id="csvPace" class="detail-value">-</div>
-    </div>
-    <div class="detail-box">
-      <div class="detail-label">평균 심박</div>
-      <div id="csvHr" class="detail-value">-</div>
-    </div>
-    <div class="detail-box">
-      <div class="detail-label">최근 6개월 거리</div>
-      <div id="csv6m" class="detail-value">-</div>
-    </div>
-  </div>
-</section>
-    
+      <div class="summary-grid">
+        <div class="detail-box">
+          <div class="detail-label">총 활동 수</div>
+          <div id="csvRuns" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">총 거리</div>
+          <div id="csvDistance" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">평균 페이스</div>
+          <div id="csvPace" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">평균 심박</div>
+          <div id="csvHr" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">최근 6개월 거리</div>
+          <div id="csv6m" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">최근 1년 거리</div>
+          <div id="csv1y" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">주간거리 추정</div>
+          <div id="csvWeekly" class="detail-value">-</div>
+        </div>
+      </div>
+
+      <div class="action-row bottom-pad">
+        <button id="applyCsvBtn" class="primary">입력값에 적용</button>
+      </div>
+    </section>
+
     <section class="card">
       <div class="section-title-row">
         <h2>상세 결과</h2>
