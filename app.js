@@ -17,6 +17,7 @@ function secondsToHms(seconds) {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
+
   return h > 0
     ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
     : `${m}:${String(s).padStart(2, "0")}`;
@@ -43,35 +44,23 @@ document.getElementById("calcBtn").addEventListener("click", () => {
 
   if (mode === "10K") {
     dist = 10;
-    pred = tenk || (half ? riegel(half, 21.0975, 10, 1.04) : 0) || (full ? riegel(full, 42.195, 10, 1.03) : 0);
+    pred = tenk || (half ? riegel(half, 21.0975, 10, 1.04) : 0);
   } else if (mode === "half") {
     dist = 21.0975;
-    pred = half || (tenk ? riegel(tenk, 10, 21.0975, 1.06) : 0) || (full ? riegel(full, 42.195, 21.0975, 1.045) : 0);
+    pred = half || (tenk ? riegel(tenk, 10, 21.0975, 1.06) : 0);
   } else {
     dist = 42.195;
-    pred = full || (half ? riegel(half, 21.0975, 42.195, 1.06) : 0) || (tenk ? riegel(tenk, 10, 42.195, 1.06) : 0);
+    pred = full || (half ? riegel(half, 21.0975, 42.195, 1.06) : 0);
   }
 
   if (!pred) {
     document.getElementById("resultTime").textContent = "-";
     document.getElementById("resultPace").textContent = "-";
-    document.getElementById("resultNote").textContent = "기록을 하나 이상 입력해줘";
+    document.getElementById("resultNote").textContent = "기록을 입력해줘";
     return;
   }
 
   document.getElementById("resultTime").textContent = secondsToHms(pred);
   document.getElementById("resultPace").textContent = secondsToPace(pred / dist);
-  document.getElementById("resultNote").textContent = "웹 1단계 기본 예측 완료";
-});
-
-document.getElementById("paceBtn").addEventListener("click", () => {
-  const dist = Number(document.getElementById("dist").value || 0);
-  const time = parseTimeToSeconds(document.getElementById("targetTime").value);
-
-  if (!dist || !time) {
-    document.getElementById("paceResult").textContent = "거리와 목표 시간을 입력해줘";
-    return;
-  }
-
-  document.getElementById("paceResult").textContent = `평균 페이스: ${secondsToPace(time / dist)}`;
+  document.getElementById("resultNote").textContent = "예측 완료";
 });
