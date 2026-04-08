@@ -11,7 +11,7 @@
     <header class="hero">
       <div>
         <h1>Running Race Predictor</h1>
-        <p>웹 2.2단계 · CSV 자동 반영 + 자동 저장</p>
+        <p>웹 2.3단계 · 확장형 대회 DB + 비교 카드</p>
       </div>
       <div class="hero-badge">WEB MVP</div>
     </header>
@@ -83,7 +83,7 @@
         </div>
 
         <div class="helper-text">
-          하나의 기록만 넣어도 계산 가능하고, CSV를 올리면 훈련 지표를 자동으로 채울 수 있어.
+          하나의 기록만 넣어도 계산 가능하고, 계산하면 아래 대회 비교 카드가 자동 생성돼.
         </div>
       </section>
 
@@ -146,34 +146,13 @@
       </div>
 
       <div class="summary-grid">
-        <div class="detail-box">
-          <div class="detail-label">총 활동 수</div>
-          <div id="csvRuns" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">총 거리</div>
-          <div id="csvDistance" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">평균 페이스</div>
-          <div id="csvPace" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">평균 심박</div>
-          <div id="csvHr" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">최근 6개월 거리</div>
-          <div id="csv6m" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">최근 1년 거리</div>
-          <div id="csv1y" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">주간거리 추정</div>
-          <div id="csvWeekly" class="detail-value">-</div>
-        </div>
+        <div class="detail-box"><div class="detail-label">총 활동 수</div><div id="csvRuns" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">총 거리</div><div id="csvDistance" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 페이스</div><div id="csvPace" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 심박</div><div id="csvHr" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">최근 6개월 거리</div><div id="csv6m" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">최근 1년 거리</div><div id="csv1y" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">주간거리 추정</div><div id="csvWeekly" class="detail-value">-</div></div>
       </div>
 
       <div class="action-row bottom-pad">
@@ -186,18 +165,19 @@
         <h2>상세 결과</h2>
       </div>
       <div class="detail-grid">
-        <div class="detail-box">
-          <div class="detail-label">예상 기록</div>
-          <div id="resultTime" class="detail-value">-</div>
-        </div>
-        <div class="detail-box">
-          <div class="detail-label">평균 페이스</div>
-          <div id="resultPace" class="detail-value">-</div>
-        </div>
-        <div class="detail-box wide">
-          <div class="detail-label">메모</div>
-          <div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div>
-        </div>
+        <div class="detail-box"><div class="detail-label">예상 기록</div><div id="resultTime" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 페이스</div><div id="resultPace" class="detail-value">-</div></div>
+        <div class="detail-box wide"><div class="detail-label">메모</div><div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>대회 비교</h2>
+        <span class="section-caption">선택한 종목 기준으로 대표 대회 예상 기록 비교</span>
+      </div>
+      <div id="raceCards" class="race-cards-grid">
+        <div class="empty-message">계산하면 여기에 대회 비교 카드가 생겨.</div>
       </div>
     </section>
   </main>
