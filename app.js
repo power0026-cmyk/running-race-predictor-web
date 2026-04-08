@@ -319,3 +319,101 @@ if(applyCsvBtn){
 }
 
 updatePaceModeVisibility();
+
+const STORAGE_KEY = "running_race_predictor_web_state_v1";
+
+function getAppState() {
+  return {
+    tenk: byId("tenk")?.value || "",
+    half: byId("half")?.value || "",
+    full: byId("full")?.value || "",
+    mileage6m: byId("mileage6m")?.value || "",
+    mileage1y: byId("mileage1y")?.value || "",
+    weekly: byId("weekly")?.value || "",
+    avgHrInput: byId("avgHrInput")?.value || "",
+    raceMode: byId("raceMode")?.value || "10K",
+    paceCalcMode: byId("paceCalcMode")?.value || "time_to_pace",
+    dist: byId("dist")?.value || "",
+    targetTime: byId("targetTime")?.value || "",
+    targetPace: byId("targetPace")?.value || ""
+  };
+}
+
+function saveAppState() {
+  try {
+    const state = getAppState();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (err) {
+    console.error("저장 실패", err);
+  }
+}
+
+function loadAppState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    const state = JSON.parse(raw);
+
+    setValue("tenk", state.tenk || "");
+    setValue("half", state.half || "");
+    setValue("full", state.full || "");
+    setValue("mileage6m", state.mileage6m || "");
+    setValue("mileage1y", state.mileage1y || "");
+    setValue("weekly", state.weekly || "");
+    setValue("avgHrInput", state.avgHrInput || "");
+    setValue("raceMode", state.raceMode || "10K");
+    setValue("paceCalcMode", state.paceCalcMode || "time_to_pace");
+    setValue("dist", state.dist || "");
+    setValue("targetTime", state.targetTime || "");
+    setValue("targetPace", state.targetPace || "");
+
+    updatePaceModeVisibility();
+  } catch (err) {
+    console.error("불러오기 실패", err);
+  }
+}
+
+function bindAutoSave(id, eventName = "input") {
+  const el = byId(id);
+  if (el) {
+    el.addEventListener(eventName, saveAppState);
+  }
+}
+
+loadAppState();
+
+[
+  "tenk",
+  "half",
+  "full",
+  "mileage6m",
+  "mileage1y",
+  "weekly",
+  "avgHrInput",
+  "dist",
+  "targetTime",
+  "targetPace"
+].forEach(id => bindAutoSave(id, "input"));
+
+[
+  "raceMode",
+  "paceCalcMode"
+].forEach(id => bindAutoSave(id, "change"));
+
+const applyCsvBtnForSave = byId("applyCsvBtn");
+if (applyCsvBtnForSave) {
+  applyCsvBtnForSave.addEventListener("click", () => {
+    setTimeout(saveAppState, 50);
+  });
+}
+
+const calcBtnForSave = byId("calcBtn");
+if (calcBtnForSave) {
+  calcBtnForSave.addEventListener("click", saveAppState);
+}
+
+const paceBtnForSave = byId("paceBtn");
+if (paceBtnForSave) {
+  paceBtnForSave.addEventListener("click", saveAppState);
+}
