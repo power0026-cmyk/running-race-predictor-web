@@ -110,6 +110,41 @@
     </div>
 
     <section class="card">
+  <div class="section-title-row">
+    <h2>훈련 CSV 업로드</h2>
+    <span class="section-caption">훈련 기록 파일을 올리면 요약해줘</span>
+  </div>
+
+  <div class="upload-row">
+    <input id="csvFile" type="file" accept=".csv" />
+    <div id="csvFileName" class="helper-text">선택된 파일 없음</div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="detail-box">
+      <div class="detail-label">총 활동 수</div>
+      <div id="csvRuns" class="detail-value">-</div>
+    </div>
+    <div class="detail-box">
+      <div class="detail-label">총 거리</div>
+      <div id="csvDistance" class="detail-value">-</div>
+    </div>
+    <div class="detail-box">
+      <div class="detail-label">평균 페이스</div>
+      <div id="csvPace" class="detail-value">-</div>
+    </div>
+    <div class="detail-box">
+      <div class="detail-label">평균 심박</div>
+      <div id="csvHr" class="detail-value">-</div>
+    </div>
+    <div class="detail-box">
+      <div class="detail-label">최근 6개월 거리</div>
+      <div id="csv6m" class="detail-value">-</div>
+    </div>
+  </div>
+</section>
+    
+    <section class="card">
       <div class="section-title-row">
         <h2>상세 결과</h2>
       </div>
