@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -7,61 +8,128 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="wrap">
+  <main class="app-shell">
     <header class="hero">
-      <h1>Running Race Predictor</h1>
-      <p>웹 1단계 MVP</p>
+      <div>
+        <h1>Running Race Predictor</h1>
+        <p>웹 1.5단계 · 예측 + 페이스 계산기</p>
+      </div>
+      <div class="hero-badge">WEB MVP</div>
     </header>
 
+    <section class="hero-result card">
+      <div class="hero-result-label">예상 결과</div>
+      <div id="heroTime" class="hero-time">-</div>
+      <div id="heroPace" class="hero-pace">-</div>
+      <div id="heroMeta" class="hero-meta">기록을 입력하고 계산해줘</div>
+    </section>
+
+    <div class="main-grid">
+      <section class="card">
+        <div class="section-title-row">
+          <h2>기록 입력</h2>
+          <span class="section-caption">hh:mm:ss 또는 mm:ss</span>
+        </div>
+        <div class="record-grid">
+          <label class="field">
+            <span>10K</span>
+            <input id="tenk" type="text" placeholder="0:47:10" />
+          </label>
+          <label class="field">
+            <span>하프</span>
+            <input id="half" type="text" placeholder="1:42:10" />
+          </label>
+          <label class="field">
+            <span>풀</span>
+            <input id="full" type="text" placeholder="3:41:30" />
+          </label>
+        </div>
+
+        <div class="section-title-row top-gap">
+          <h2>목표 대회</h2>
+        </div>
+        <div class="action-row">
+          <select id="raceMode">
+            <option value="10K">10K</option>
+            <option value="half">하프</option>
+            <option value="full">풀</option>
+          </select>
+          <button id="calcBtn" class="primary">예상 기록 계산</button>
+        </div>
+
+        <div class="helper-text">
+          하나의 기록만 넣어도 계산 가능하고, 여러 기록을 넣으면 가장 가까운 기준으로 예측해.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <h2>페이스 계산기</h2>
+          <span class="section-caption">거리와 시간으로 평균 페이스 계산</span>
+        </div>
+
+        <div class="pace-mode-grid">
+          <label class="field">
+            <span>계산 방식</span>
+            <select id="paceCalcMode">
+              <option value="time_to_pace">시간 → 페이스</option>
+              <option value="pace_to_time">페이스 → 기록</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>거리 (km)</span>
+            <input id="dist" type="number" min="0" step="0.01" placeholder="10" />
+          </label>
+        </div>
+
+        <div id="timeToPaceFields" class="pace-fields">
+          <label class="field">
+            <span>목표 시간</span>
+            <input id="targetTime" type="text" placeholder="0:50:00" />
+          </label>
+        </div>
+
+        <div id="paceToTimeFields" class="pace-fields hidden">
+          <label class="field">
+            <span>목표 페이스</span>
+            <input id="targetPace" type="text" placeholder="5:00" />
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button id="paceBtn" class="primary">페이스 계산</button>
+        </div>
+
+        <div class="result-panel">
+          <div class="result-label">페이스 계산 결과</div>
+          <div id="paceResult" class="result-main">-</div>
+          <div id="paceSubResult" class="result-sub">-</div>
+        </div>
+      </section>
+    </div>
+
     <section class="card">
-      <h2>기록 입력</h2>
-      <div class="grid">
-        <label>10K
-          <input id="tenk" type="text" placeholder="0:48:50" />
-        </label>
-        <label>하프
-          <input id="half" type="text" placeholder="1:51:13" />
-        </label>
-        <label>풀
-          <input id="full" type="text" placeholder="3:56:50" />
-        </label>
+      <div class="section-title-row">
+        <h2>상세 결과</h2>
       </div>
-    </section>
-
-    <section class="card">
-      <h2>목표 대회</h2>
-      <select id="raceMode">
-        <option value="10K">10K</option>
-        <option value="half">하프</option>
-        <option value="full">풀</option>
-      </select>
-      <button id="calcBtn">예상 기록 계산</button>
-    </section>
-
-    <section class="card result">
-      <h2>결과</h2>
-      <div id="resultTime">-</div>
-      <div id="resultPace">-</div>
-      <div id="resultNote">기록을 입력하고 계산해줘</div>
-    </section>
-
-    <section class="card">
-      <h2>페이스 계산기</h2>
-      <label>거리(km)
-        <input id="dist" type="number" step="0.01" value="10" />
-      </label>
-      <label>목표 시간
-        <input id="targetTime" type="text" placeholder="0:50:00" />
-      </label>
-      <button id="paceBtn">평균 페이스 계산</button>
-      <div id="paceResult">-</div>
+      <div class="detail-grid">
+        <div class="detail-box">
+          <div class="detail-label">예상 기록</div>
+          <div id="resultTime" class="detail-value">-</div>
+        </div>
+        <div class="detail-box">
+          <div class="detail-label">평균 페이스</div>
+          <div id="resultPace" class="detail-value">-</div>
+        </div>
+        <div class="detail-box wide">
+          <div class="detail-label">메모</div>
+          <div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div>
+        </div>
+      </div>
     </section>
   </main>
 
   <script src="app.js"></script>
 </body>
 </html>
-<input id="dist" ...>
-<input id="targetTime" ...>
-<button id="paceBtn">
-<div id="paceResult">
