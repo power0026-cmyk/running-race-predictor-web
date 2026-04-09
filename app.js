@@ -64,85 +64,94 @@ function analyzeTrainingRows(rows){
   const avgHr = hrCount ? hrTotal / hrCount : 0;
   return { weeklyAvg, weeklyPeak, longestRun, runFreq, variability, avgHr };
 }
+
 function buildTrainingAdvice(stats, extras){
   if(!stats) return null;
+
   const signals = [];
   const advice = [];
-  let priority = "주간거리 기반";
+  let priority = "훈련 리듬 안정화 (일관성 확보)";
 
   if(stats.weeklyAvg < 40){
     signals.push("🔴 주간거리 부족");
-    advice.push("다음 4주 동안 주간거리를 급하게 올리지 말고 35 → 40 → 45km처럼 점진적으로 올려봐.");
-    priority = "주간거리 기반";
+    advice.push("1) 주간거리\n급하게 올리지 말고 35 → 40 → 45km처럼 단계적으로 올려.");
+    priority = "주간거리 기반 만들기";
   } else if(stats.weeklyAvg < 55){
     signals.push("🟡 주간거리 보강 필요");
-    advice.push("기록 향상을 원하면 최근 주간거리에서 5~10km 정도 더 안정적으로 쌓는 게 좋아.");
+    advice.push("1) 주간거리\n현재 수준은 나쁘지 않지만 기록 향상을 원하면 5~10km 정도 더 안정적으로 쌓는 게 좋아.");
     priority = "주간거리 일관성";
   } else {
     signals.push("🟢 주간거리 양호");
-    advice.push("주간거리 기반은 괜찮아. 이제 질 훈련과 회복 균형을 보는 단계야.");
+    advice.push("1) 주간거리\n기반은 괜찮아. 이제 질 훈련과 회복 균형을 보는 단계야.");
   }
 
   if(stats.longestRun < 24){
     signals.push("🔴 롱런 부족");
-    advice.push("최장거리가 짧은 편이야. 2주에 1번 24~28km 롱런으로 후반 적응을 만들어봐.");
-    if(priority === "주간거리 기반") priority = "롱런 적응";
+    advice.push("2) 롱런\n최장거리가 짧은 편이야. 2주에 1번 24~28km 롱런으로 후반 적응을 만들어봐.");
+    if(priority === "주간거리 기반 만들기") priority = "롱런 적응";
   } else if(stats.longestRun < 28){
     signals.push("🟡 롱런 보강 필요");
-    advice.push("마라톤 대비라면 28~30km 롱런 경험을 조금 더 쌓는 게 좋아.");
+    advice.push("2) 롱런\n마라톤 대비라면 28~30km 롱런 경험을 조금 더 쌓는 게 좋아.");
   } else {
     signals.push("🟢 롱런 양호");
   }
 
   if(stats.runFreq < 3){
-    signals.push("🔴 빈도 낮음");
-    advice.push("주당 러닝 횟수가 적은 편이야. 거리보다 먼저 주 4회 리듬을 만드는 게 효과적이야.");
+    signals.push("🔴 훈련 빈도 낮음");
+    advice.push("3) 훈련 빈도\n주당 러닝 횟수가 적은 편이야. 거리보다 먼저 주 4회 리듬을 만드는 게 효과적이야.");
     priority = "주간 러닝 빈도";
   } else if(stats.runFreq < 4){
-    signals.push("🟡 빈도 조금 부족");
-    advice.push("훈련 빈도를 주 4회 이상으로 맞추면 거리 누적이 훨씬 쉬워져.");
+    signals.push("🟡 훈련 빈도 보강 필요");
+    advice.push("3) 훈련 빈도\n주 4회 이상으로 맞추면 거리 누적과 회복 패턴이 훨씬 안정돼.");
   } else {
-    signals.push("🟢 빈도 양호");
+    signals.push("🟢 훈련 빈도 양호");
   }
 
   if(stats.variability > 0.7){
     signals.push("🔴 일관성 흔들림 큼");
-    advice.push("주별 훈련량 편차가 큰 편이야. 강한 주와 쉬는 주의 차이를 줄여서 꾸준함을 먼저 잡아봐.");
-    priority = "훈련 일관성";
+    advice.push("4) 훈련 구조\n강한 날을 더 세게 하기보다, 들쑥날쑥한 패턴을 먼저 줄여서 꾸준한 흐름을 만들어.");
+    priority = "훈련 리듬 안정화 (일관성 확보)";
   } else if(stats.variability > 0.4){
     signals.push("🟡 일관성 보강 필요");
-    advice.push("들쑥날쑥한 패턴보다 비슷한 리듬으로 누적하는 쪽이 기록 향상에 유리해.");
+    advice.push("4) 훈련 구조\n주별 편차가 조금 큰 편이야. 비슷한 리듬으로 누적하는 쪽이 기록 향상에 더 유리해.");
   } else {
     signals.push("🟢 일관성 양호");
   }
 
   if(extras && extras.ltPace > 0){
-    const ltMin = extras.ltPace / 60;
-    if(ltMin > 4.8){
+    const paceStr = secondsToPace(extras.ltPace);
+    if(extras.ltPace > 280){
       signals.push("🟡 역치 자극 보강 필요");
-      advice.push("주 1회 20~30분 템포런이나 크루즈 인터벌을 넣어서 역치 자극을 조금 더 만들면 좋아.");
+      advice.push(`5) 역치 훈련\n현재 역치 페이스는 ${paceStr}이야.\n주 1회 20~30분 템포런 또는 크루즈 인터벌을 추가하면 좋아.`);
       if(priority === "주간거리 일관성") priority = "역치 훈련";
     } else {
       signals.push("🟢 역치 자극 양호");
+      advice.push(`5) 역치 훈련\n현재 역치 페이스는 ${paceStr}이야.\n이 수준이면 유지하면서 롱런 완성도를 높이는 쪽이 더 중요해.`);
     }
   } else {
     signals.push("⚪ 역치 정보 없음");
-    advice.push("젖산 역치 페이스를 입력하면 템포런 보강 조언이 더 정확해져.");
+    advice.push("5) 역치 훈련\n젖산 역치 페이스를 입력하면 템포런 보강 조언이 더 정확해져.");
   }
 
   if(extras && extras.vo2 > 0 && extras.vo2 < 48){
-    advice.push("VO2max 수치가 낮은 편이라면 단거리 인터벌보다 먼저 유산소 기반과 템포런을 우선하는 게 좋아.");
+    advice.push("추가 코멘트\nVO2max 수치가 낮은 편이라면 단거리 인터벌보다 유산소 기반과 템포런을 먼저 챙기는 게 좋아.");
   }
 
   if(extras && extras.fullEqSec > 0){
     if(extras.fullEqSec <= 10800){
-      advice.push("현재 입력 기준으로는 서브3 사정권에 가까워. 무리한 고강도보다 롱런과 회복 완성도가 더 중요해.");
+      advice.push("목표 전략\n현재 입력 기준으로는 서브3 사정권에 가까워. 무리한 고강도보다 롱런과 회복 완성도가 더 중요해.");
     } else if(extras.fullEqSec <= 12600){
-      advice.push("서브3를 바로 노리기보다는 먼저 풀 기준 3시간 10분~20분대를 안정적으로 만드는 전략이 좋아.");
+      advice.push("목표 전략\n지금 상태라면 서브3를 바로 노리기보다 먼저 풀 기준 3시간 10~20분대를 안정적으로 만드는 접근이 좋아.");
+    } else {
+      advice.push("목표 전략\n지금은 기록을 급하게 당기기보다 주간거리, 빈도, 롱런을 차곡차곡 쌓는 게 더 큰 수확으로 이어져.");
     }
   }
 
-  return { priority, signals: signals.join("  "), advice: advice.slice(0,5).join("\\n") };
+  return {
+    priority,
+    signals: signals.join("\n"),
+    advice: advice.slice(0,6).join("\n\n"),
+  };
 }
 function setTrainingFeedback(stats, built){
   if(!stats || !built){ setTrainingFeedbackDefault(); return; }
