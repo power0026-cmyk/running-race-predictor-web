@@ -1,99 +1,248 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Running Race Predictor</title><link rel="stylesheet" href="style.css"/></head>
-<body><main class="app-shell">
-<header class="hero"><div><h1>Running Race Predictor</h1><p>웹 2.5단계 · 질문형 자동 보정 + 러너 프로필</p></div><div class="hero-badge">WEB MVP</div></header>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Running Race Predictor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <h1>Running Race Predictor</h1>
+        <p>웹 2.5.1단계 · 컬럼 입력 + 선택형 커스텀 대회</p>
+      </div>
+      <div class="hero-badge">WEB MVP</div>
+    </header>
 
-<section class="hero-result card"><div class="hero-result-label">예상 결과</div><div id="heroTime" class="hero-time">-</div><div id="heroPace" class="hero-pace">-</div><div id="heroMeta" class="hero-meta">기록을 입력하고 계산해줘</div></section>
+    <section class="hero-result card">
+      <div class="hero-result-label">예상 결과</div>
+      <div id="heroTime" class="hero-time">-</div>
+      <div id="heroPace" class="hero-pace">-</div>
+      <div id="heroMeta" class="hero-meta">기록을 입력하고 계산해줘</div>
+    </section>
 
-<div class="main-grid">
-<section class="card">
-<div class="section-title-row"><h2>기록 입력</h2><span class="section-caption">hh:mm:ss 또는 mm:ss</span></div>
-<div class="record-grid">
-<label class="field"><span>10K</span><input id="tenk" type="text" placeholder="0:47:10"/></label>
-<label class="field"><span>하프</span><input id="half" type="text" placeholder="1:42:10"/></label>
-<label class="field"><span>풀</span><input id="full" type="text" placeholder="3:41:30"/></label>
-</div>
+    <div class="main-grid">
+      <section class="card">
+        <div class="section-title-row">
+          <h2>기록 입력</h2>
+          <span class="section-caption">시 / 분 / 초 컬럼 입력</span>
+        </div>
 
-<div class="section-title-row top-gap"><h2>러너 프로필</h2><span class="section-caption">신체·생리 지표 입력</span></div>
-<div class="metrics-grid">
-<label class="field"><span>키 (cm)</span><input id="heightCm" type="number" step="0.1" placeholder="175"/></label>
-<label class="field"><span>체중 (kg)</span><input id="weightKg" type="number" step="0.1" placeholder="68"/></label>
-<label class="field"><span>VO2max</span><input id="vo2max" type="number" step="0.1" placeholder="52"/></label>
-<label class="field"><span>젖산 역치 페이스</span><input id="ltPace" type="text" placeholder="4:35"/></label>
-<label class="field"><span>젖산 역치 심박</span><input id="ltHr" type="number" step="1" placeholder="168"/></label>
-<label class="field"><span>평균 훈련 심박</span><input id="avgHrInput" type="number" step="1" placeholder="145"/></label>
-</div>
+        <div class="record-grid">
+          <div class="field">
+            <span>10K</span>
+            <div class="split-time-row split-3">
+              <input id="tenkH" type="number" min="0" step="1" placeholder="시" />
+              <input id="tenkM" type="number" min="0" step="1" placeholder="분" />
+              <input id="tenkS" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
 
-<div class="section-title-row top-gap"><h2>훈련 지표</h2><span class="section-caption">CSV 업로드 후 자동 반영 가능</span></div>
-<div class="metrics-grid">
-<label class="field"><span>최근 6개월 거리 (km)</span><input id="mileage6m" type="number" step="0.1" placeholder="820"/></label>
-<label class="field"><span>최근 1년 거리 (km)</span><input id="mileage1y" type="number" step="0.1" placeholder="1650"/></label>
-<label class="field"><span>주간거리 추정 (km)</span><input id="weekly" type="number" step="0.1" placeholder="42"/></label>
-<label class="field"><span>비고</span><input id="profileNote" type="text" placeholder="더위 약함, 업힐 강점"/></label>
-</div>
+          <div class="field">
+            <span>하프</span>
+            <div class="split-time-row split-3">
+              <input id="halfH" type="number" min="0" step="1" placeholder="시" />
+              <input id="halfM" type="number" min="0" step="1" placeholder="분" />
+              <input id="halfS" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
 
-<div class="section-title-row top-gap"><h2>목표 대회</h2></div>
-<div class="action-row"><select id="raceMode"><option value="10K">10K</option><option value="half">하프</option><option value="full">풀</option></select><button id="calcBtn" class="primary">예상 기록 계산</button></div>
-<div class="helper-text">계산하면 아래 대회 비교 카드가 자동 생성되고, 직접 추가한 대회도 함께 반영돼.</div>
-</section>
+          <div class="field">
+            <span>풀</span>
+            <div class="split-time-row split-3">
+              <input id="fullH" type="number" min="0" step="1" placeholder="시" />
+              <input id="fullM" type="number" min="0" step="1" placeholder="분" />
+              <input id="fullS" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
+        </div>
 
-<section class="card">
-<div class="section-title-row"><h2>페이스 계산기</h2><span class="section-caption">거리와 시간으로 평균 페이스 계산</span></div>
-<div class="pace-mode-grid">
-<label class="field"><span>계산 방식</span><select id="paceCalcMode"><option value="time_to_pace">시간 → 페이스</option><option value="pace_to_time">페이스 → 기록</option></select></label>
-<label class="field"><span>거리 (km)</span><input id="dist" type="number" step="0.01" placeholder="10"/></label>
-</div>
-<div id="timeToPaceFields" class="pace-fields"><label class="field"><span>목표 시간</span><input id="targetTime" type="text" placeholder="0:50:00"/></label></div>
-<div id="paceToTimeFields" class="pace-fields hidden"><label class="field"><span>목표 페이스</span><input id="targetPace" type="text" placeholder="5:00"/></label></div>
-<div class="action-row"><button id="paceBtn" class="primary">페이스 계산</button></div>
-<div class="result-panel"><div class="result-label">페이스 계산 결과</div><div id="paceResult" class="result-main">-</div><div id="paceSubResult" class="result-sub">-</div></div>
-</section>
-</div>
+        <div class="section-title-row top-gap">
+          <h2>러너 프로필</h2>
+          <span class="section-caption">신체·생리 지표 입력</span>
+        </div>
 
-<section class="card"><div class="section-title-row"><h2>훈련 CSV 업로드</h2><span class="section-caption">훈련 기록 파일을 올리면 요약하고 입력값에 반영 가능</span></div>
-<div class="upload-row"><input id="csvFile" type="file" accept=".csv"/><div id="csvFileName" class="helper-text">선택된 파일 없음</div></div>
-<div class="summary-grid">
-<div class="detail-box"><div class="detail-label">총 활동 수</div><div id="csvRuns" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">총 거리</div><div id="csvDistance" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">평균 페이스</div><div id="csvPace" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">평균 심박</div><div id="csvHr" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">최근 6개월 거리</div><div id="csv6m" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">최근 1년 거리</div><div id="csv1y" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">주간거리 추정</div><div id="csvWeekly" class="detail-value">-</div></div>
-</div>
-<div class="action-row bottom-pad"><button id="applyCsvBtn" class="primary">입력값에 적용</button></div></section>
+        <div class="metrics-grid">
+          <label class="field"><span>키 (cm)</span><input id="heightCm" type="number" step="0.1" placeholder="175" /></label>
+          <label class="field"><span>체중 (kg)</span><input id="weightKg" type="number" step="0.1" placeholder="68" /></label>
+          <label class="field"><span>VO2max</span><input id="vo2max" type="number" step="0.1" placeholder="52" /></label>
 
-<section class="card"><div class="section-title-row"><h2>상세 결과</h2></div>
-<div class="detail-grid">
-<div class="detail-box"><div class="detail-label">예상 기록</div><div id="resultTime" class="detail-value">-</div></div>
-<div class="detail-box"><div class="detail-label">평균 페이스</div><div id="resultPace" class="detail-value">-</div></div>
-<div class="detail-box wide"><div class="detail-label">메모</div><div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div></div>
-</div></section>
+          <div class="field">
+            <span>젖산 역치 페이스</span>
+            <div class="split-time-row split-2">
+              <input id="ltPaceMin" type="number" min="0" step="1" placeholder="분" />
+              <input id="ltPaceSec" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
 
-<section class="card"><div class="section-title-row"><h2>내 대회 추가</h2><span class="section-caption">보정값 직접입력 대신 질문형 자동 생성</span></div>
-<div class="custom-race-grid">
-<label class="field"><span>대회명</span><input id="customRaceName" type="text" placeholder="내동네마라톤"/></label>
-<label class="field"><span>종목</span><select id="customRaceMode"><option value="full">풀</option><option value="half">하프</option><option value="tenk">10K</option></select></label>
-<label class="field"><span>기본 성향</span><select id="customRaceSpeed"><option value="normal">보통 코스</option><option value="very_fast">매우 빠름</option><option value="fast">빠름</option><option value="slow">느림</option><option value="very_slow">매우 느림</option></select></label>
-<label class="field"><span>업다운</span><select id="customRaceHill"><option value="none">거의 없음</option><option value="slight">약간 있음</option><option value="medium">꽤 있음</option><option value="high">많음</option></select></label>
-<label class="field"><span>코너 수</span><select id="customRaceTurns"><option value="few">적음</option><option value="medium">보통</option><option value="many">많음</option></select></label>
-<label class="field"><span>날씨 예상</span><select id="customRaceWeather"><option value="normal">보통</option><option value="cool">시원함</option><option value="warm">따뜻함</option><option value="hot">더움</option></select></label>
-<label class="field"><span>후반 난이도</span><select id="customRaceFinish"><option value="normal">보통</option><option value="easy">편함</option><option value="hard">힘듦</option></select></label>
-<label class="field"><span>설명</span><input id="customRaceDesc" type="text" placeholder="강변형, 후반 업다운"/></label>
-<label class="field"><span>계절</span><input id="customRaceSeason" type="text" placeholder="봄"/></label>
-<label class="field"><span>고도</span><input id="customRaceElevation" type="text" placeholder="중간"/></label>
-<label class="field"><span>자동 계산 보정값</span><input id="customRaceFactorPreview" type="text" readonly placeholder="자동 계산됨"/></label>
-</div>
-<div class="action-row custom-actions">
-<label class="checkbox-row"><input id="customRaceFavorite" type="checkbox"/><span>즐겨찾기</span></label>
-<button id="previewFactorBtn" class="primary">보정값 계산</button>
-<button id="addCustomRaceBtn" class="primary">대회 추가</button>
-<button id="clearCustomRacesBtn">내 대회 전체 삭제</button>
-</div>
-<div id="customRaceMessage" class="helper-text custom-message">아직 추가한 대회가 없어.</div>
-<div id="customRaceList" class="custom-race-list"></div></section>
+          <label class="field"><span>젖산 역치 심박</span><input id="ltHr" type="number" step="1" placeholder="168" /></label>
+          <label class="field"><span>평균 훈련 심박</span><input id="avgHrInput" type="number" step="1" placeholder="145" /></label>
+        </div>
 
-<section class="card"><div class="section-title-row"><h2>대회 비교</h2><span class="section-caption">선택한 종목 기준으로 대표 대회 예상 기록 비교</span></div>
-<div id="raceCards" class="race-cards-grid"><div class="empty-message">계산하면 여기에 대회 비교 카드가 생겨.</div></div></section>
-</main><script src="app.js"></script></body></html>
+        <div class="section-title-row top-gap">
+          <h2>훈련 지표</h2>
+          <span class="section-caption">CSV 업로드 후 자동 반영 가능</span>
+        </div>
+
+        <div class="metrics-grid">
+          <label class="field"><span>최근 6개월 거리 (km)</span><input id="mileage6m" type="number" step="0.1" placeholder="820" /></label>
+          <label class="field"><span>최근 1년 거리 (km)</span><input id="mileage1y" type="number" step="0.1" placeholder="1650" /></label>
+          <label class="field"><span>주간거리 추정 (km)</span><input id="weekly" type="number" step="0.1" placeholder="42" /></label>
+          <label class="field"><span>비고</span><input id="profileNote" type="text" placeholder="더위 약함, 업힐 강점" /></label>
+        </div>
+
+        <div class="section-title-row top-gap">
+          <h2>목표 대회</h2>
+        </div>
+
+        <div class="action-row">
+          <select id="raceMode">
+            <option value="10K">10K</option>
+            <option value="half">하프</option>
+            <option value="full">풀</option>
+          </select>
+          <button id="calcBtn" class="primary">예상 기록 계산</button>
+        </div>
+
+        <div class="helper-text">
+          계산하면 아래 대회 비교 카드가 자동 생성되고, 직접 추가한 대회도 함께 반영돼.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title-row">
+          <h2>페이스 계산기</h2>
+          <span class="section-caption">컬럼 방식 입력</span>
+        </div>
+
+        <div class="pace-mode-grid">
+          <label class="field">
+            <span>계산 방식</span>
+            <select id="paceCalcMode">
+              <option value="time_to_pace">시간 → 페이스</option>
+              <option value="pace_to_time">페이스 → 기록</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>거리 (km)</span>
+            <input id="dist" type="number" step="0.01" placeholder="10" />
+          </label>
+        </div>
+
+        <div id="timeToPaceFields" class="pace-fields">
+          <div class="field">
+            <span>목표 시간</span>
+            <div class="split-time-row split-3">
+              <input id="targetTimeH" type="number" min="0" step="1" placeholder="시" />
+              <input id="targetTimeM" type="number" min="0" step="1" placeholder="분" />
+              <input id="targetTimeS" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
+        </div>
+
+        <div id="paceToTimeFields" class="pace-fields hidden">
+          <div class="field">
+            <span>목표 페이스</span>
+            <div class="split-time-row split-2">
+              <input id="targetPaceMin" type="number" min="0" step="1" placeholder="분" />
+              <input id="targetPaceSec" type="number" min="0" max="59" step="1" placeholder="초" />
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="paceBtn" class="primary">페이스 계산</button>
+        </div>
+
+        <div class="result-panel">
+          <div class="result-label">페이스 계산 결과</div>
+          <div id="paceResult" class="result-main">-</div>
+          <div id="paceSubResult" class="result-sub">-</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>훈련 CSV 업로드</h2>
+        <span class="section-caption">훈련 기록 파일을 올리면 요약하고 입력값에 반영 가능</span>
+      </div>
+
+      <div class="upload-row">
+        <input id="csvFile" type="file" accept=".csv" />
+        <div id="csvFileName" class="helper-text">선택된 파일 없음</div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="detail-box"><div class="detail-label">총 활동 수</div><div id="csvRuns" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">총 거리</div><div id="csvDistance" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 페이스</div><div id="csvPace" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 심박</div><div id="csvHr" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">최근 6개월 거리</div><div id="csv6m" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">최근 1년 거리</div><div id="csv1y" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">주간거리 추정</div><div id="csvWeekly" class="detail-value">-</div></div>
+      </div>
+
+      <div class="action-row bottom-pad">
+        <button id="applyCsvBtn" class="primary">입력값에 적용</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>상세 결과</h2>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-box"><div class="detail-label">예상 기록</div><div id="resultTime" class="detail-value">-</div></div>
+        <div class="detail-box"><div class="detail-label">평균 페이스</div><div id="resultPace" class="detail-value">-</div></div>
+        <div class="detail-box wide"><div class="detail-label">메모</div><div id="resultNote" class="detail-note">기록을 입력하고 계산해줘</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>내 대회 추가</h2>
+        <span class="section-caption">설명·계절·고도도 선택형으로 입력</span>
+      </div>
+
+      <div class="custom-race-grid">
+        <label class="field"><span>대회명</span><input id="customRaceName" type="text" placeholder="내동네마라톤" /></label>
+        <label class="field"><span>종목</span><select id="customRaceMode"><option value="full">풀</option><option value="half">하프</option><option value="tenk">10K</option></select></label>
+        <label class="field"><span>기본 성향</span><select id="customRaceSpeed"><option value="normal">보통 코스</option><option value="very_fast">매우 빠름</option><option value="fast">빠름</option><option value="slow">느림</option><option value="very_slow">매우 느림</option></select></label>
+        <label class="field"><span>업다운</span><select id="customRaceHill"><option value="none">거의 없음</option><option value="slight">약간 있음</option><option value="medium">꽤 있음</option><option value="high">많음</option></select></label>
+        <label class="field"><span>코너 수</span><select id="customRaceTurns"><option value="few">적음</option><option value="medium">보통</option><option value="many">많음</option></select></label>
+        <label class="field"><span>날씨</span><select id="customRaceWeather"><option value="clear">맑음</option><option value="cloudy">구름</option><option value="rain">비</option><option value="snow">눈</option></select></label>
+        <label class="field"><span>후반 난이도</span><select id="customRaceFinish"><option value="normal">보통</option><option value="easy">편함</option><option value="hard">힘듦</option></select></label>
+        <label class="field"><span>설명</span><select id="customRaceDesc"><option value="기록 친화적">기록 친화적</option><option value="도심형 무난 코스">도심형 무난 코스</option><option value="강변형 빠른 코스">강변형 빠른 코스</option><option value="후반 업다운 존재">후반 업다운 존재</option><option value="턴이 많은 코스">턴이 많은 코스</option><option value="변수 많은 코스">변수 많은 코스</option></select></label>
+        <label class="field"><span>계절</span><select id="customRaceSeason"><option value="봄">봄</option><option value="여름">여름</option><option value="가을">가을</option><option value="겨울">겨울</option></select></label>
+        <label class="field"><span>고도</span><select id="customRaceElevation"><option value="낮음">낮음</option><option value="보통">보통</option><option value="중간">중간</option><option value="높음">높음</option><option value="매우 높음">매우 높음</option></select></label>
+        <label class="field"><span>자동 계산 보정값</span><input id="customRaceFactorPreview" type="text" readonly placeholder="자동 계산됨" /></label>
+      </div>
+
+      <div class="action-row custom-actions">
+        <label class="checkbox-row"><input id="customRaceFavorite" type="checkbox" /><span>즐겨찾기</span></label>
+        <button id="previewFactorBtn" class="primary">보정값 계산</button>
+        <button id="addCustomRaceBtn" class="primary">대회 추가</button>
+        <button id="clearCustomRacesBtn">내 대회 전체 삭제</button>
+      </div>
+
+      <div id="customRaceMessage" class="helper-text custom-message">아직 추가한 대회가 없어.</div>
+      <div id="customRaceList" class="custom-race-list"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>대회 비교</h2>
+        <span class="section-caption">선택한 종목 기준으로 대표 대회 예상 기록 비교</span>
+      </div>
+      <div id="raceCards" class="race-cards-grid">
+        <div class="empty-message">계산하면 여기에 대회 비교 카드가 생겨.</div>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
