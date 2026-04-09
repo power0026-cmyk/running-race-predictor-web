@@ -219,6 +219,67 @@
 
     <section class="card">
       <div class="section-title-row">
+        <h2>서브3 가능성 게이지</h2>
+        <span class="section-caption">현재 입력 기준으로 본 재미용 추정치</span>
+      </div>
+      <div class="sub3-wrap">
+        <div class="sub3-top">
+          <div>
+            <div class="sub3-score-label">가능성 점수</div>
+            <div id="sub3Score" class="sub3-score">-</div>
+          </div>
+          <div>
+            <div class="sub3-score-label">풀 기준 예상</div>
+            <div id="sub3FullEq" class="sub3-full-eq">-</div>
+          </div>
+        </div>
+        <div class="sub3-bar-shell">
+          <div id="sub3Bar" class="sub3-bar-fill" style="width:0%"></div>
+        </div>
+        <div id="sub3Label" class="sub3-label">기록을 입력하면 서브3 가능성 게이지가 표시돼.</div>
+        <div id="sub3Note" class="sub3-note">주간거리, 누적거리, VO2max, 젖산 역치 페이스 등을 가볍게 반영한 참고용 지표야.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
+        <h2>CSV 기반 훈련 피드백</h2>
+        <span class="section-caption">업로드한 훈련 기록을 바탕으로 한 자동 진단</span>
+      </div>
+      <div class="feedback-wrap">
+        <div class="feedback-top-grid">
+          <div class="detail-box">
+            <div class="detail-label">최근 12주 평균 주간거리</div>
+            <div id="fbWeeklyAvg" class="detail-value">-</div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">최근 최장거리</div>
+            <div id="fbLongestRun" class="detail-value">-</div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">주당 평균 러닝 횟수</div>
+            <div id="fbRunFreq" class="detail-value">-</div>
+          </div>
+        </div>
+        <div class="feedback-main-grid">
+          <div class="detail-box">
+            <div class="detail-label">가장 먼저 보강할 것</div>
+            <div id="fbPriority" class="feedback-priority">CSV를 업로드하면 표시돼.</div>
+          </div>
+          <div class="detail-box">
+            <div class="detail-label">훈련 진단</div>
+            <div id="fbSignals" class="feedback-signals">주간거리, 롱런, 일관성, 강도 균형을 바탕으로 보여줘.</div>
+          </div>
+        </div>
+        <div class="detail-box feedback-advice-box">
+          <div class="detail-label">추천 보강 방향</div>
+          <div id="fbAdvice" class="feedback-advice">CSV를 올리면 다음 4주에 어떤 훈련을 더 해야 할지 정리해줄게.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-title-row">
         <h2>내 대회 추가</h2>
         <span class="section-caption">설명·계절·고도도 선택형 입력</span>
       </div>
