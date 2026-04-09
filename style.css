@@ -130,3 +130,13 @@ input::placeholder{color:#6f7c90}input:focus,select:focus{border-color:var(--acc
 .feedback-signals, .feedback-advice { font-size:14px; line-height:1.6; color:#dbe5f4; white-space:pre-line; }
 .feedback-advice-box { margin-top:0; }
 @media (max-width:1100px) { .feedback-top-grid, .feedback-main-grid { grid-template-columns:1fr; } }
+
+
+.feedback-priority {
+  color: #38bdf8;
+}
+
+.feedback-signals,
+.feedback-advice {
+  white-space: pre-line;
+}
